@@ -30,16 +30,9 @@ if (!empty($target) && filter_var($target, FILTER_VALIDATE_URL)) {
     $url = 'http://' . $_SERVER['HTTP_HOST'];
 }
 
-// 提取目标域名
-$parsed_url = parse_url($url);
-$display_url = $parsed_url['host'] ?? $url;
-
 // 动态内容
 $siteUrl = 'http://' . $_SERVER['HTTP_HOST']; // 站点 URL
 $siteTitle = '您的网站名称'; // 站点标题
-$logoUrl = 'https://your-site.com/logo.png'; // Logo 图片 URL
-$siteCreatedYear = date('Y'); // 建站年份
-$currentYear = date('Y'); // 当前年份
 ?>
 <!DOCTYPE html>
 <html>
@@ -48,7 +41,8 @@ $currentYear = date('Y'); // 当前年份
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
     <meta name="robots" content="noindex, nofollow" />
-    <title><?php echo $title; ?> - 跳转提示</title>
+    <meta http-equiv="refresh" content="3;url=<?php echo htmlspecialchars($url, ENT_QUOTES, 'UTF-8'); ?>">
+    <title><?php echo htmlspecialchars($title, ENT_QUOTES, 'UTF-8'); ?> - 跳转提示</title>
     <style>
         body {
             font-family: 'Cascadia Code', 'Consolas', 'Microsoft YaHei', SimHei !important;
@@ -212,23 +206,39 @@ $currentYear = date('Y'); // 当前年份
                         </div>
                         <div class="remind_detail">
                             <div class="safety-url">
-                                <?php echo $url; ?>
+                                <?php echo htmlspecialchars($url, ENT_QUOTES, 'UTF-8'); ?>
                             </div>
-                            <span style="color:#CC0000;font-weight:800;">温馨提示:</span><br />该网页不属于本站页面，我们无法确认该网页是否安全，它可能包含未知的安全隐患，请注意保护好个人信息！<br />页面将于5秒后自动跳转......
+                            <span style="color:#CC0000;font-weight:800;">温馨提示:</span><br />该网页不属于本站页面，我们无法确认该网页是否安全，它可能包含未知的安全隐患，请注意保护好个人信息！<br />
+                            页面将于 <span id="countdown">3</span> 秒后自动跳转......
                         </div>
                     </div>
                 </div>
             </div>
         </div>
         <div class="c-footer">
-            <a href="<?php echo $url; ?>" rel="nofollow" class="c-footer-a1 btn_blue">继续访问</a>
-            <a class="c-footer-a2" href="<?php echo $siteUrl; ?>" rel="nofollow">返回主页</a>
+            <a href="<?php echo htmlspecialchars($url, ENT_QUOTES, 'UTF-8'); ?>" rel="nofollow" class="c-footer-a1 btn_blue">继续访问</a>
+            <a class="c-footer-a2" href="<?php echo htmlspecialchars($siteUrl, ENT_QUOTES, 'UTF-8'); ?>" rel="nofollow">返回主页</a>
+            <a id="cancelRedirect" class="c-footer-a2" href="javascript:void(0);" rel="nofollow" style="margin-left: 15px;">取消跳转</a>
         </div>
     </div>
     <script>
-        setTimeout(function() {
-            window.location.href = "<?php echo $url; ?>";
-        }, 5000); // 5 秒后跳转
+        // 倒计时逻辑
+        var countdown = 3;
+        var countdownElement = document.getElementById('countdown');
+        var timer = setInterval(function() {
+            countdown--;
+            countdownElement.textContent = countdown;
+            if (countdown <= 0) {
+                clearInterval(timer);
+                window.location.href = "<?php echo htmlspecialchars($url, ENT_QUOTES, 'UTF-8'); ?>";
+            }
+        }, 1000);
+
+        // 取消跳转逻辑
+        document.getElementById('cancelRedirect').addEventListener('click', function() {
+            clearInterval(timer); // 停止倒计时
+            document.getElementById('countdown').textContent = '已取消';
+        });
     </script>
 </body>
 
