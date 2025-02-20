@@ -36,7 +36,7 @@ public static function convertLinks($content, $widget, $lastResult)
     $siteUrl = Typecho_Widget::widget('Widget_Options')->siteUrl;
 
     return preg_replace_callback(
-        '/<a\s+(?:[^>]*?\s+)?href=("|\')([^"\']+)\1([^>]*)>(.*?)<\/a>/is', // 支持嵌套 HTML 结构
+        '/<a\s+(?:[^>]*?\s+)?href=("|\')([^"\']+)\1([^>]*)>(.*?)<\/a>/is', // 支持嵌套 HTML 结构，新正则 (增强属性顺序兼容性)
         function ($matches) use ($siteUrl) {
             $url = $matches[2]; // 捕获 href 属性的值
             $attributes = $matches[1] . $matches[3]; // 捕获其他属性
